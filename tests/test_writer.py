@@ -27,8 +27,8 @@ class TestWriter(object):
     def test_number(self, writer):
         with writer.array():
             writer.write(2)
-            writer.write(5.2)
-        assert writer.build() == b"[2,5.2]"
+            writer.write(5.1)
+        assert writer.build() == b"[2,5.1]"
 
     def test_none(self, writer):
         with writer.array():
