@@ -47,6 +47,7 @@ class BaseJSONWriter(object):
     ARRAY_CTX = 2
     OBJECT_START_KEY_CTX = 3
     OBJECT_KEY_CTX = 4
+    OBJECT_VALUE_CTX = 5
 
     def __init__(self):
         if not self.is_available():
@@ -71,6 +72,8 @@ class BaseJSONWriter(object):
             self._write(b",")
         elif self.ctx == self.ARRAY_START_CTX:
             self.ctx = self.ARRAY_CTX
+        elif self.ctx == self.OBJECT_VALUE_CTX:
+            self.ctx = self.OBJECT_KEY_CTX
 
     def array(self):
         return _ArrayElement(self)
@@ -121,6 +124,9 @@ class BaseJSONWriter(object):
     def write(self, v):
         if self.ctx == self.START_CTX:
             raise TypeError("Top level JSON structure must be object or array")
+        elif (self.ctx == self.OBJECT_START_KEY_CTX or
+            self.ctx == self.OBJECT_KEY_CTX):
+            raise TypeError("Need to use write_key for keys.")
         self._starting_element()
         if v is None:
             self._write(b"null")
@@ -153,7 +159,7 @@ class BaseJSONWriter(object):
             raise TypeError("key must be either bytes or unicode")
         self._write(b'"')
         self._write(b":")
-        self.ctx = self.OBJECT_KEY_CTX
+        self.ctx = self.OBJECT_VALUE_CTX
 
 
 class PyPyStringBuilderWriter(BaseJSONWriter):

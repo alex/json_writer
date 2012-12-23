@@ -71,3 +71,13 @@ class TestWriter(object):
             writer.write("\r")
             writer.write("\t")
         assert writer.build() == b'["\\b","\\f","\\n","\\r","\\t"]'
+
+    def test_non_key_object(self, writer):
+        with pytest.raises(TypeError):
+            with writer.object():
+                writer.write(12)
+        with pytest.raises(TypeError):
+            with writer.object():
+                writer.write_key("abc")
+                writer.write(123)
+                writer.write(456)
